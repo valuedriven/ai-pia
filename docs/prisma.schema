@@ -1,0 +1,114 @@
+// 1. Configurações iniciais
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// 2. Enums para padronização de status e papéis
+enum Role {
+  ADMIN   // Microempreendedor
+  CLIENT  // Cliente final
+}
+
+enum OrderStatus {
+  CREATED
+  PENDING_PAYMENT
+  PAID
+  DELIVERED
+  CANCELED
+}
+
+// 3. Modelos de Dados
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  passwordHash  String    @map("password_hash")
+  fullName      String?   @map("full_name")
+  role          Role      @default(CLIENT)
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  // Relacionamentos
+  products      Product[] // Produtos que o ADMIN cadastrou
+  ordersAsClient Order[]  @relation("ClientOrders") // Pedidos que o CLIENTE fez
+  ordersAsOwner  Order[]  @relation("OwnerOrders")  // Pedidos recebidos pelo ADMIN
+  
+  @@map("users")
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  price       Decimal  @db.Decimal(10, 2) // Recomendado para valores monetários
+  stock       Int      @default(0)
+  active      Boolean  @default(true)
+  imageUrl    String?  @map("image_url") // Campo útil para a vitrine
+  
+  // Relacionamento com o dono do produto (Microempreendedor)
+  ownerId     String   @map("owner_id")
+  owner       User     @relation(fields: [ownerId], references: [id])
+
+  orderItems  OrderItem[]
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("products")
+}
+
+model Order {
+  id          String      @id @default(uuid())
+  totalValue  Decimal     @map("total_value") @db.Decimal(10, 2)
+  status      OrderStatus @default(CREATED)
+  
+  // Quem comprou
+  customerId  String      @map("customer_id")
+  customer    User        @relation("ClientOrders", fields: [customerId], references: [id])
+
+  // Quem vendeu (facilita queries para o dashboard do admin)
+  ownerId     String      @map("owner_id")
+  owner       User        @relation("OwnerOrders", fields: [ownerId], references: [id])
+
+  items       OrderItem[]
+  payments    Payment[]
+
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  quantity  Int
+  unitPrice Decimal @map("unit_price") @db.Decimal(10, 2) // Preço congelado no momento da compra
+  
+  productId String  @map("product_id")
+  product   Product @relation(fields: [productId], references: [id])
+
+  orderId   String  @map("order_id")
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("order_items")
+}
+
+model Payment {
+  id        String   @id @default(uuid())
+  amount    Decimal  @db.Decimal(10, 2)
+  date      DateTime @default(now())
+  method    String   // Ex: PIX, CARTAO, DINHEIRO
+  note      String?  // Observações opcionais
+
+  orderId   String   @map("order_id")
+  order     Order    @relation(fields: [orderId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("payments")
+}
