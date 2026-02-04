@@ -54,7 +54,7 @@ Disponível no arquivo prisma.schema.
 ### TEL-04 Carrinho de Compras
 
 - Lista de produtos selecionados incluindo imagem, nome, quantidade, subtotal.
-- Campos: Quantidade por item, Método de pagamento
+- Campos: Quantidade por item
 - Botões: Confirmar Pedido
 - Links: Excluir
 - Exibição do valor total calculado automaticamente
@@ -68,9 +68,10 @@ Disponível no arquivo prisma.schema.
 
 ### TEL-06 Detalhe do Pedido
 
-- Formulario com número do pedido, Status do pedido, lista de produtos comprados
+- Formulario com número do pedido, Status do pedido, lista de produtos comprados.
+- Cliente apenas visualiza.
 - Campos: —
-- Botões: Alterar Status (Admin)
+- Botões: Alterar Status (Admin).
 - Links: —
 
 ### TEL-07 Gestão de Produtos
@@ -99,6 +100,7 @@ Disponível no arquivo prisma.schema.
 ### TEL-10 Dashboard
 
 - Grid com cards de métricas (KPIs): Total de Vendas, Valor Recebido (R$), Valor Pendente (R$).
+- Exclusivo do administrador.
 - Lista resumida dos últimos 5 pedidos.
 - Links: Produtos, Clientes, Pedidos, Pagamentos.
 
@@ -149,5 +151,4 @@ Disponível no arquivo prisma.schema.
 - Usar badges de status conforme paleta definida
 - Validar campos de formulário em tempo real quando possível
 - Confirmar ações destrutivas antes de executar
-- Manter consistência de ícones (biblioteca Lucide)
 - Implementar navegação por teclado para acessibilidade

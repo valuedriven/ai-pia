@@ -12,9 +12,9 @@ O foco inicial do produto é a simplicidade, a rápida adoção e a redução de
 
 ## 2. Perfis de Usuário
 
-### 2.1 Administrador (Microempreendedor)
+### 2.1 Administrador
 
-- Problemas: perdas de vendas e sobrecarga por processo manual.
+- Problemas: microempreendedor sofre com perdas de vendas e sobrecarga por processo manual.
 - Objetivos: realizar a gestão de vendas, por meio do fluxo de pedidos e pagamentos, além da manutenção de dados sobre produtos e clientes.
 - Dados demográficos: faixa etária típica entre 18 e 60.
 - Motivações: possibilitar ao cliente uma experiência única.
@@ -30,9 +30,10 @@ O foco inicial do produto é a simplicidade, a rápida adoção e a redução de
 
 ### 2.3 Autenticação e Acesso
 
-- Clientes podem navegar na vitrine e preencher carrinho sem estarem autenticados.
+- Cliente pode navegar na vitrine e preencher carrinho sem estarem autenticados.
+- Cliente precisa estar logado para concluir pedido.
 - Administrador deve estar logado para todas as ações.
-- O cliente de negócios se conecta com o usuário logado por meio do campo e-mail.
+- O cliente se conecta com o usuário logado por meio do campo e-mail.
 
 ---
 
@@ -50,9 +51,9 @@ Critérios de Aceitação:
 ### RFN-02 Criação e Acompanhamento de Pedidos
 
 - Permite ao cliente criar pedidos a partir da seleção de produtos e respectivas quantidades.
+- Permite ao cliente visualizar o histórico de pedidos.
 - Possibilita calcular automaticamente o valor total e informar dados básicos do cliente.
 - Permite cancelar pedidos ainda não pagos.
-- Permite visualizar o histórico de pedidos.
 
 Critérios de Aceitação:
 ✓ O sistema deve recalcular automaticamente o valor total do pedido sempre que a quantidade de um item for alterada
@@ -85,6 +86,7 @@ Critérios de Aceitação:
 - Possibilita identificar pedidos pendentes ou atrasados e movimentá-los entre os estados do fluxo.
 - Permite ao administrador registrar e controlar os pagamentos associados aos pedidos.
 - O registro de pagamento será manualmente realizado pelo administrador.
+- O método de pagamento deve ser informado no momento do registro manual do pagamento.
 
 Critérios de Aceitação:
 ✓ O administrador deve conseguir filtrar pedidos por status
@@ -162,4 +164,5 @@ A solução deverá utilizar mecanismos formais para declaração, versionamento
 
 ### Fora de Escopo (MVP)
 
-- RNF-04, RNF-05, RNF-06
+- RNF-04, RNF-05, RNF-06. Entretanto, embora estejam fora do escopo funcional do MVP, sua arquitetura será preparada desde o início para suportá-los, com implementação gradual.
+- No MVP, será utilizado um único schema, sem isolamento por tenant, mantendo o tenant_id apenas como preparação para evolução.

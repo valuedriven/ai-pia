@@ -47,6 +47,7 @@ Este documento descreve como os requisitos não funcionais do produto e-micro-co
 - Rotação: Emitir novo refresh token a cada uso
 - Armazenamento: HttpOnly cookies (seguro, SameSite=strict)
 - Validação: Cada requisito deve validar a assinatura, exp (expiration), iss (issuer) e aud (audience)
+- O processo de autenticação será realizado via frontend, com validação de tokens no backend por meio de middleware/guards.
 
 ---
 
@@ -65,6 +66,8 @@ Este documento descreve como os requisitos não funcionais do produto e-micro-co
 - Autenticação: Bearer JWT no header `Authorization`.
 - Rate limiting: 100 requisições/minuto por IP, 1000 requisições/minuto por usuário autenticado.
 - CORS: Permitir apenas origens whitelist (domínios do tenant).
+- Endpoints públicos: vitrine, produtos ativos.
+- Endpoints protegidos: pedidos, gestão, dashboard.
 
 ---
 
