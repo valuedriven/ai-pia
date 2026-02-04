@@ -31,80 +31,76 @@ Disponível no arquivo prisma.schema.
 
 ### TEL-01 Página Inicial
 
+- Página contendo Barra superior, Vitrine e Rodapé.
+- Barra superior: Logo, Barra de busca, Sessão (Login/Logout).
 - Campos: -
-- Botões: Login/Logout
-- Links: Informações de sessão
-- Objetos: Menu lateral, Vitrine, Listagem dos últimos pedidos
-- A vitrine está disponível para usuários não logados.
+- Botões: -
+- Links: -
 
 ### TEL-02 Login
 
+- Formulário para acesso e/ou cadastro.
 - Campos: E-mail, Senha.
 - Botões: Entrar.
 - Links: Criar conta (define perfil Cliente no cadastro).
 
 ### TEL-03 Vitrine de Produtos
 
-- Campos: Busca de produtos.
-- Botões: Adicionar, Ver Detalhes.
+- Grid de cards (cada um contendo imagem, nome e preço formatado de produto).
+- Campos: -
+- Botões: Adicionar ao carrinho (em cada card)
 - Links: —
-- Grid de cards de produtos.
-- Cada card exibe imagem, nome e preço formatado.
-- Pode ser acessada por usuário logado ou não.
 
 ### TEL-04 Carrinho de Compras
 
-- Campos: Quantidade por item
+- Lista de produtos selecionados incluindo imagem, nome, quantidade, subtotal.
+- Campos: Quantidade por item, Método de pagamento
 - Botões: Confirmar Pedido
-- Links: —
-- Lista de itens selecionados (imagem, nome, quantidade, subtotal)
+- Links: Excluir
 - Exibição do valor total calculado automaticamente
 
 ### TEL-05 Acompanhamento de Pedidos
 
+- Lista histórica de pedidos: Número, Data, Total, Status (com badge visual)
 - Campos: —
 - Botões: —
 - Links: Acessar Detalhe do Pedido
-- Lista histórica de pedidos
-- Colunas: ID, Data, Total, Status (com badge visual)
 
 ### TEL-06 Detalhe do Pedido
 
+- Formulario com número do pedido, Status do pedido, lista de produtos comprados
 - Campos: —
-- Botões: Alterar Status (Admin), Registrar Pagamento (Admin)
+- Botões: Alterar Status (Admin)
 - Links: —
-- Cabeçalho com ID e status atual
-- Lista de itens exibindo o preço pago no momento da compra
 
 ### TEL-07 Gestão de Produtos
 
+- Lista com imagem (miniatura), nome, preço, estoque e ações.
+- Formulário único para criação e edição.
 - Campos: Nome do Produto, Imagem, Descrição, Preço, Estoque, Categoria, Ativo (s/n).
 - Botões: Cadastrar, Salvar, Editar, Excluir.
 - Links: —
-- Visualização em tabela com imagem (miniatura), nome, preço, estoque e ações.
-- Formulário único para criação e edição.
 
 ### TEL-08 Gestão de Clientes
 
+- Lista com dados de cada cliente.
+- Formulário único para criação e edição.
 - Campos: Nome do cliente, Endereço, e-mail, Telefone.
 - Botões: Cadastrar, Salvar, Editar, Excluir.
 - Links: —
-- Visualização em tabela.
-- Formulário único para criação e edição.
 
 ### TEL-09 Gestão de Pedidos
 
+- Lista com dados de cada pedido: ID, Data, Total, Status (com badge visual)
 - Campos: —
 - Botões: —
 - Links: Acessar Detalhe do Pedido
-- Lista histórica de pedidos
-- Colunas: ID, Data, Total, Status (com badge visual)
 
 ### TEL-10 Dashboard
 
-- Cards de métricas (KPIs): Valor Recebido (R$), Valor Pendente (R$).
+- Grid com cards de métricas (KPIs): Total de Vendas, Valor Recebido (R$), Valor Pendente (R$).
+- Lista resumida dos últimos 5 pedidos.
 - Links: Produtos, Clientes, Pedidos, Pagamentos.
-- Observações: Lista resumida dos últimos 5 pedidos.
 
 ---
 
@@ -112,10 +108,9 @@ Disponível no arquivo prisma.schema.
 
 ### Home (Página Inicial)
 
-- Banner Principal
+- Barra Principal
 - Vitrine
 - Rodape
-- Login/Logout
 
 ### Fluxo de Compra
 
