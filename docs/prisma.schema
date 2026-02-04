@@ -1,128 +1,104 @@
-// Configurações iniciais do Prisma
+// prisma.schema
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql" // Pode alterar para "mysql" ou "sqlite"
+  provider = "postgresql" // Você pode alterar para 'mysql' ou 'sqlite' conforme sua necessidade
   url      = env("DATABASE_URL")
 }
 
-// --------------------------------------
-// Enums (Listas de opções fixas)
-// --------------------------------------
-
-enum PerfilUsuario {
-  ADMIN
-  FUNCIONARIO
-  VISITANTE
-}
+// ------------------------------------------------------
+// 1. ENUMS (DOMÍNIOS)
+// ------------------------------------------------------
 
 enum StatusPedido {
   NOVO
-  PAGAMENTO_APROVADO
-  EM_PREPARACAO
+  PAGO
+  PREPARACAO
   FATURADO
   DESPACHADO
-  EM_TRANSITO
   ENTREGUE
   CANCELADO
 }
 
-enum FormaPagamento {
+enum MetodoPagamento {
   CARTAO_CREDITO
   CARTAO_DEBITO
   PIX
   DINHEIRO
 }
 
-// --------------------------------------
-// Modelos (Entidades)
-// --------------------------------------
+enum CategoriaProduto {
+  MODA_ACESSORIOS
+  ELETRONICOS_INFORMATICA
+  BELEZA_CUIDADOS_PESSOAIS
+  CASA_DECORACAO
+}
+
+// ------------------------------------------------------
+// 2. MODELOS (ENTIDADES)
+// ------------------------------------------------------
 
 model Produto {
-  id          Int          @id @default(autoincrement())
+  id          String           @id @default(uuid())
   nome        String
-  categoria   String
-  imagem      String?      // O '?' indica que é opcional
-  descricao   String?      @db.Text // @db.Text permite textos longos
-  precoUnitario Decimal @db.Decimal(10, 2) // Ex: 99999999.99
-  ativo       Boolean      @default(true)
-  estoque     Int          @default(0)
-  criadoEm    DateTime     @default(now())
-  atualizadoEm DateTime    @updatedAt
-  
-  // Relacionamento inverso
+  categoria   CategoriaProduto
+  imagem      String?          // URL da imagem
+  descricao   String           @db.Text
+  estoque     Int              @default(0)
+  ativo       Boolean          @default(true)
+  preco       Decimal          @db.Decimal(10, 2) // Adicionado com base na TEL-03 e TEL-07
+  criadoEm    DateTime         @default(now())
+  atualizadoEm DateTime        @updatedAt
+
   itensPedido ItemPedido[]
 
-  @@map("produtos") // Nome da tabela no banco
+  @@map("produtos")
 }
 
 model Cliente {
-  id        Int      @id @default(autoincrement())
-  nome      String
-  endereco  String
-  email     String   @unique
-  telefone  String?
-  criadoEm  DateTime @default(now())
+  id          String   @id @default(uuid())
+  nome        String
+  endereco    String?  // Pode ser expandido para modelo próprio futuramente
+  email       String   @unique // Chave para integração com auth externo (1.3)
+  telefone    String?
+  ativo       Boolean  @default(true)
+  criadoEm    DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
 
-  // Relacionamento: Um cliente pode ter vários pedidos
-  pedidos   Pedido[]
+  pedidos     Pedido[]
 
   @@map("clientes")
 }
 
-model Usuario {
-  id       Int           @id @default(autoincrement())
-  email    String        @unique // Identificação geralmente é o email ou username
-  senha    String        // Essencial para login
-  perfil   PerfilUsuario @default(FUNCIONARIO)
-  criadoEm DateTime      @default(now())
-
-  @@map("usuarios")
-}
-
 model Pedido {
-  id        Int          @id @default(autoincrement()) // Número do pedido
-  status    StatusPedido @default(NOVO)
-  criadoEm  DateTime     @default(now())
-  
-  // Relacionamento com Cliente (Foreign Key)
-  clienteId Int
-  cliente   Cliente      @relation(fields: [clienteId], references: [id])
+  id              String           @id @default(uuid()) // Número do pedido
+  clienteId       String
+  enderecoEntrega String
+  status          StatusPedido     @default(NOVO)
+  dataPagamento   DateTime?
+  valorTotal      Decimal          @db.Decimal(10, 2) // Valor pago/Total do pedido
+  metodoPagamento MetodoPagamento? // Pode ser nulo se o pedido for NOVO e ainda não pago
+  criadoEm        DateTime         @default(now()) // Data do pedido
+  atualizadoEm    DateTime         @updatedAt
 
-  // Relacionamentos
-  itens     ItemPedido[]
-  pagamento Pagamento[]
+  cliente         Cliente          @relation(fields: [clienteId], references: [id])
+  itens           ItemPedido[]
 
   @@map("pedidos")
 }
 
 model ItemPedido {
-  id            Int     @id @default(autoincrement())
+  id            String   @id @default(uuid())
+  pedidoId      String
+  produtoId     String
+  precoUnitario Decimal  @db.Decimal(10, 2) // Snapshot do preço no momento da compra
   quantidade    Int
-  precoUnitario Decimal @db.Decimal(10, 2) // Ex: 99999999.99
 
-  // Relacionamento com Pedido
-  pedidoId      Int
-  pedido        Pedido  @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
-
-  // Relacionamento com Produto
-  produtoId     Int
-  produto       Produto @relation(fields: [produtoId], references: [id])
+  pedido        Pedido   @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  produto       Produto  @relation(fields: [produtoId], references: [id])
 
   @@map("itens_pedido")
-}
-
-model Pagamento {
-  id             Int            @id @default(autoincrement())
-  dataPagamento  DateTime       @default(now())
-  valorPago      Decimal        @db.Decimal(10, 2)
-  formaPagamento FormaPagamento
-
-  // Relacionamento 1-para-1 com Pedido
-  pedidoId       Int            
-  pedido         Pedido         @relation(fields: [pedidoId], references: [id])
-
-  @@map("pagamentos")
 }
