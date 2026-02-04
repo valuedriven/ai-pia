@@ -1,114 +1,128 @@
-// 1. Configurações iniciais
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
+// Configurações iniciais do Prisma
 generator client {
   provider = "prisma-client-js"
 }
 
-// 2. Enums para padronização de status e papéis
-enum Role {
-  ADMIN   // Microempreendedor
-  CLIENT  // Cliente final
+datasource db {
+  provider = "postgresql" // Pode alterar para "mysql" ou "sqlite"
+  url      = env("DATABASE_URL")
 }
 
-enum OrderStatus {
-  CREATED
-  PENDING_PAYMENT
-  PAID
-  DELIVERED
-  CANCELED
+// --------------------------------------
+// Enums (Listas de opções fixas)
+// --------------------------------------
+
+enum PerfilUsuario {
+  ADMIN
+  FUNCIONARIO
+  VISITANTE
 }
 
-// 3. Modelos de Dados
+enum StatusPedido {
+  NOVO
+  PAGAMENTO_APROVADO
+  EM_PREPARACAO
+  FATURADO
+  DESPACHADO
+  EM_TRANSITO
+  ENTREGUE
+  CANCELADO
+}
 
-model User {
-  id            String    @id @default(uuid())
-  email         String    @unique
-  passwordHash  String    @map("password_hash")
-  fullName      String?   @map("full_name")
-  role          Role      @default(CLIENT)
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
+enum FormaPagamento {
+  CARTAO_CREDITO
+  CARTAO_DEBITO
+  PIX
+  DINHEIRO
+}
+
+// --------------------------------------
+// Modelos (Entidades)
+// --------------------------------------
+
+model Produto {
+  id          Int          @id @default(autoincrement())
+  nome        String
+  categoria   String
+  imagem      String?      // O '?' indica que é opcional
+  descricao   String?      @db.Text // @db.Text permite textos longos
+  precoUnitario Decimal @db.Decimal(10, 2) // Ex: 99999999.99
+  ativo       Boolean      @default(true)
+  estoque     Int          @default(0)
+  criadoEm    DateTime     @default(now())
+  atualizadoEm DateTime    @updatedAt
+  
+  // Relacionamento inverso
+  itensPedido ItemPedido[]
+
+  @@map("produtos") // Nome da tabela no banco
+}
+
+model Cliente {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  endereco  String
+  email     String   @unique
+  telefone  String?
+  criadoEm  DateTime @default(now())
+
+  // Relacionamento: Um cliente pode ter vários pedidos
+  pedidos   Pedido[]
+
+  @@map("clientes")
+}
+
+model Usuario {
+  id       Int           @id @default(autoincrement())
+  email    String        @unique // Identificação geralmente é o email ou username
+  senha    String        // Essencial para login
+  perfil   PerfilUsuario @default(FUNCIONARIO)
+  criadoEm DateTime      @default(now())
+
+  @@map("usuarios")
+}
+
+model Pedido {
+  id        Int          @id @default(autoincrement()) // Número do pedido
+  status    StatusPedido @default(NOVO)
+  criadoEm  DateTime     @default(now())
+  
+  // Relacionamento com Cliente (Foreign Key)
+  clienteId Int
+  cliente   Cliente      @relation(fields: [clienteId], references: [id])
 
   // Relacionamentos
-  products      Product[] // Produtos que o ADMIN cadastrou
-  ordersAsClient Order[]  @relation("ClientOrders") // Pedidos que o CLIENTE fez
-  ordersAsOwner  Order[]  @relation("OwnerOrders")  // Pedidos recebidos pelo ADMIN
-  
-  @@map("users")
+  itens     ItemPedido[]
+  pagamento Pagamento[]
+
+  @@map("pedidos")
 }
 
-model Product {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
-  price       Decimal  @db.Decimal(10, 2) // Recomendado para valores monetários
-  stock       Int      @default(0)
-  active      Boolean  @default(true)
-  imageUrl    String?  @map("image_url") // Campo útil para a vitrine
-  
-  // Relacionamento com o dono do produto (Microempreendedor)
-  ownerId     String   @map("owner_id")
-  owner       User     @relation(fields: [ownerId], references: [id])
+model ItemPedido {
+  id            Int     @id @default(autoincrement())
+  quantidade    Int
+  precoUnitario Decimal @db.Decimal(10, 2) // Ex: 99999999.99
 
-  orderItems  OrderItem[]
+  // Relacionamento com Pedido
+  pedidoId      Int
+  pedido        Pedido  @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
 
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  // Relacionamento com Produto
+  produtoId     Int
+  produto       Produto @relation(fields: [produtoId], references: [id])
 
-  @@map("products")
+  @@map("itens_pedido")
 }
 
-model Order {
-  id          String      @id @default(uuid())
-  totalValue  Decimal     @map("total_value") @db.Decimal(10, 2)
-  status      OrderStatus @default(CREATED)
-  
-  // Quem comprou
-  customerId  String      @map("customer_id")
-  customer    User        @relation("ClientOrders", fields: [customerId], references: [id])
+model Pagamento {
+  id             Int            @id @default(autoincrement())
+  dataPagamento  DateTime       @default(now())
+  valorPago      Decimal        @db.Decimal(10, 2)
+  formaPagamento FormaPagamento
 
-  // Quem vendeu (facilita queries para o dashboard do admin)
-  ownerId     String      @map("owner_id")
-  owner       User        @relation("OwnerOrders", fields: [ownerId], references: [id])
+  // Relacionamento 1-para-1 com Pedido
+  pedidoId       Int            
+  pedido         Pedido         @relation(fields: [pedidoId], references: [id])
 
-  items       OrderItem[]
-  payments    Payment[]
-
-  createdAt   DateTime    @default(now()) @map("created_at")
-  updatedAt   DateTime    @updatedAt @map("updated_at")
-
-  @@map("orders")
-}
-
-model OrderItem {
-  id        String  @id @default(uuid())
-  quantity  Int
-  unitPrice Decimal @map("unit_price") @db.Decimal(10, 2) // Preço congelado no momento da compra
-  
-  productId String  @map("product_id")
-  product   Product @relation(fields: [productId], references: [id])
-
-  orderId   String  @map("order_id")
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-
-  @@map("order_items")
-}
-
-model Payment {
-  id        String   @id @default(uuid())
-  amount    Decimal  @db.Decimal(10, 2)
-  date      DateTime @default(now())
-  method    String   // Ex: PIX, CARTAO, DINHEIRO
-  note      String?  // Observações opcionais
-
-  orderId   String   @map("order_id")
-  order     Order    @relation(fields: [orderId], references: [id])
-
-  createdAt DateTime @default(now()) @map("created_at")
-
-  @@map("payments")
+  @@map("pagamentos")
 }

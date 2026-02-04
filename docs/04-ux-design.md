@@ -1,4 +1,4 @@
-# Design System
+# Design de UX
 
 ## 1. Princípios de Design
 
@@ -22,11 +22,8 @@
 
 ### 3.1 Fontes
 
-**Fonte Primária (Texto e Interface)**
-- Inter (Google Fonts)
-
-**Fonte Secundária (Destaques Numéricos e Métricas)**
-- Inter SemiBold ou Medium
+- Fonte Primária (Texto e Interface): Inter (Google Fonts)
+- Fonte Secundária (Destaques Numéricos e Métricas): Inter SemiBold ou Medium
 
 ### 3.2 Hierarquia Tipográfica
 
@@ -78,7 +75,7 @@
 
 ---
 
-### 5.2 Cards (Vitrine de Produtos)
+### 5.2 Cards
 
 - Fundo branco
 - Borda fina cinza claro (`border border-gray-200`)
@@ -96,13 +93,13 @@
 - Cabeçalho com fundo cinza claro (`bg-gray-50`)
 - Linhas com separadores sutis (`border-b`)
 - Texto alinhado à esquerda
-- Valores numéricos (Preço, Estoque) alinhados à direita
+- Valores numéricos alinhados à direita
 
 ---
 
 ### 5.4 Indicadores de Status (Badges)
 
-- Uso de **badges textuais** com fundo suave e texto escuro.
+- Uso de badges textuais com fundo suave e texto escuro.
 - Exemplo:
   - `Pago`: Fundo verde claro / Texto verde escuro
   - `Pendente`: Fundo amarelo claro / Texto amarelo escuro
@@ -131,3 +128,4 @@
 - Contraste adequado de cores
 - Navegação por teclado
 - Conformidade com WCAG 2.1 (nível A/AA)
+- Busca deve ser feita por todos campos, exceto quando explicitado.
