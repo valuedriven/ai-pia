@@ -21,11 +21,11 @@ Este documento descreve como os requisitos não funcionais do produto e-micro-co
 
 ### 3.1 - Versão inicial
 
-- **Frontend:** Next.js 15+ (App Router) + Tailwind CSS + React Query.
+- **Frontend:** Next.js 16+ (App Router) + Tailwind CSS.
 - **Backend:** NestJS; API RESTful.
 - **Persistência:** PostgreSQL 15+ via Supabase.
 - **ORM:** Prisma 5+.
-- **Segurança (autenticação e Autorização):** Auth0.
+- **Segurança (autenticação e Autorização):** Clerk.
 - **Observabilidade:** Datadog (backend e frontend).
 - **Infraestrutura:** Vercel (backend e frontend).
 
