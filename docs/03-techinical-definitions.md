@@ -104,4 +104,4 @@ MVP mono-tenant com evolução planejada
 - Aplicativo mobile nativo (React Native/Flutter).
 - Relatórios avançados (exportação PDF/Excel).
 - Importação em massa de produtos (CSV/Excel).
-- Sistema de cupons e descontos.
+- Sistema de cupons e descontos..
