@@ -37,20 +37,59 @@ export default function CartPage() {
                 throw new Error("Não foi possível validar seu cadastro de cliente.");
             }
 
-            console.log("Customer validated/created with ID:", customerId);
+            // 2. Generate a unique Order ID
+            const orderId = `ORD-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
 
-            // 2. Here we would normally create the order in Supabase
-            // For now, we simulate the logic as requested to allow "efetivar a compra"
-            // through a valid customer record.
+            // 3. Create the Order
+            const { error: orderError } = await supabase
+                .from('orders')
+                .insert([
+                    {
+                        id: orderId,
+                        customer_id: customerId,
+                        total: total,
+                        status: 'Pendente',
+                        payment_method: 'Cartão de Crédito'
+                    }
+                ]);
 
-            await new Promise((resolve) => setTimeout(resolve, 1500));
+            if (orderError) throw orderError;
+
+            // 4. Create Order Items
+            const orderItemsData = cartItems.map(item => ({
+                order_id: orderId,
+                product_id: item.id,
+                quantity: item.quantity
+            }));
+
+            const { error: itemsError } = await supabase
+                .from('order_items')
+                .insert(orderItemsData);
+
+            if (itemsError) throw itemsError;
+
+            // 5. Update Product Stock
+            for (const item of cartItems) {
+                const { data: productData } = await supabase
+                    .from('products')
+                    .select('stock')
+                    .eq('id', item.id)
+                    .single();
+
+                if (productData) {
+                    await supabase
+                        .from('products')
+                        .update({ stock: Math.max(0, productData.stock - item.quantity) })
+                        .eq('id', item.id);
+                }
+            }
 
             clearCart();
             setIsConfirming(false);
             router.push("/my-orders");
         } catch (error: any) {
             console.error("Erro ao processar pedido:", error.message);
-            alert("Erro ao processar seu pedido. Por favor, tente novamente.");
+            alert("Erro ao processar seu pedido: " + (error.message || "Tente novamente mais tarde."));
             setIsConfirming(false);
         }
     };
