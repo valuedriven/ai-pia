@@ -29,44 +29,45 @@ Disponível no arquivo prisma.schema.
 
 ## 2. Interfaces gráficas
 
-### TEL-01 Página Inicial
+### INT-01 Página Principal
 
-- Página contendo Barra superior, Vitrine e Rodapé.
-- Barra superior: Logo, Barra de busca, Sessão (Login/Logout).
+- Página contendo:
+  - Barra superior: Logo, Barra de busca de produtos, Carrinho de compras, Perfil usuário logado ou botão Login.
+  - Menu lateral: Dashboard (admin), Produtos (admin), Clientes (admin), Pedidos.
+  - Vitrine
+    - Grid de cards com imagem, nome e preço formatado de produto.
+    - Campos: -
+    - Links: —
+    - Botões: Adicionar ao carrinho (em cada card)    
+  - Rodapé
 - Campos: -
 - Botões: -
 - Links: -
 
-### TEL-02 Login
+### INT-02 Login
 
 - Formulário para acesso e/ou cadastro.
 - Campos: E-mail, Senha.
 - Botões: Entrar.
 - Links: Criar conta (define perfil Cliente no cadastro).
 
-### TEL-03 Vitrine de Produtos
-
-- Grid de cards (cada um contendo imagem, nome e preço formatado de produto).
-- Campos: -
-- Botões: Adicionar ao carrinho (em cada card)
-- Links: —
-
-### TEL-04 Carrinho de Compras
+### INT-03 Carrinho de Compras
 
 - Lista de produtos selecionados incluindo imagem, nome, quantidade, subtotal.
 - Campos: Quantidade por item
 - Botões: Confirmar Pedido
 - Links: Excluir
 - Exibição do valor total calculado automaticamente
+- Pagamento não processado online. Pedido criado com status Novo.
 
-### TEL-05 Acompanhamento de Pedidos
+### INT-04 Acompanhamento de Pedidos
 
 - Lista histórica de pedidos: Número, Data, Total, Status (com badge visual)
 - Campos: —
 - Botões: —
 - Links: Acessar Detalhe do Pedido
 
-### TEL-06 Detalhe do Pedido
+### INT-05 Detalhe do Pedido
 
 - Formulario com número do pedido, Status do pedido, lista de produtos comprados.
 - Cliente apenas visualiza.
@@ -74,7 +75,7 @@ Disponível no arquivo prisma.schema.
 - Botões: Alterar Status (Admin).
 - Links: —
 
-### TEL-07 Gestão de Produtos
+### INT-06 Gestão de Produtos
 
 - Lista com imagem (miniatura), nome, preço, estoque e ações.
 - Formulário único para criação e edição.
@@ -82,7 +83,7 @@ Disponível no arquivo prisma.schema.
 - Botões: Cadastrar, Salvar, Editar, Excluir.
 - Links: —
 
-### TEL-08 Gestão de Clientes
+### INT-07 Gestão de Clientes
 
 - Lista com dados de cada cliente.
 - Formulário único para criação e edição.
@@ -90,27 +91,50 @@ Disponível no arquivo prisma.schema.
 - Botões: Cadastrar, Salvar, Editar, Excluir.
 - Links: —
 
-### TEL-09 Gestão de Pedidos
+### INT-08 Gestão de Pedidos
 
 - Lista com dados de cada pedido: ID, Data, Total, Status (com badge visual)
 - Campos: —
 - Botões: —
 - Links: Acessar Detalhe do Pedido
 
-### TEL-10 Dashboard
+### INT-09 Dashboard
 
 - Grid com cards de métricas (KPIs): Total de Vendas, Valor Recebido (R$), Valor Pendente (R$).
 - Exclusivo do administrador.
 - Lista resumida dos últimos 5 pedidos.
-- Links: Produtos, Clientes, Pedidos, Pagamentos.
+- Links: Produtos, Clientes, Pedidos.
+
+
+### Mapeamento de Status do Pedido para Badge (UI)
+
+Para garantir consistência visual, semântica e acessibilidade na representação do status dos pedidos, cada status deverá ser apresentado por meio de um componente **Badge**, utilizando os *tones* definidos no Design System.
+
+| Status do Pedido | Contexto | Badge tone | Semântica |
+|------------------|----------|------------|-----------|
+| Novo             | Operacional | neutral | Pedido criado, ainda sem ação financeira |
+| Pago             | Financeiro  | success | Pagamento confirmado |
+| Preparação       | Operacional | info | Pedido em preparação |
+| Faturado         | Financeiro  | info | Pedido faturado |
+| Despachado       | Operacional | info | Pedido enviado ao cliente |
+| Entregue         | Operacional | success | Pedido concluído com sucesso |
+| Cancelado        | Operacional | error | Pedido cancelado |
+
+**Diretrizes de uso:**
+- O componente **Badge** deve utilizar exclusivamente tokens semânticos do Design System.
+- Não devem ser utilizados valores visuais fixos (cores hardcoded).
+- O status deve ser sempre visível em listas, detalhes do pedido e dashboards.
+- Mudanças de status devem refletir imediatamente a atualização do Badge.
+- O uso do *tone* deve reforçar a semântica do estado do pedido, evitando ambiguidade visual.
 
 ---
 
 ## 3. Fluxo de Navegação
 
-### Home (Página Inicial)
+### Home (Página Principal)
 
 - Barra Principal
+- Menu Lateral
 - Vitrine
 - Rodape
 
@@ -125,17 +149,12 @@ Disponível no arquivo prisma.schema.
     Pagamento
     Confirmação do Pedido
 
-### Área do Administrador
+### Menu Lateral
 
   Dashboard
   Pedidos
   Produtos
-  Clientes  
-
-### Área do Cliente
-
-  Meus Pedidos
-  Dados Cadastrais
+  Clientes 
 
 ---
 

@@ -151,6 +151,7 @@ A solução deverá utilizar mecanismos formais para declaração, versionamento
 
 - O prazo de entrega do MVP é de um mês.
 - O prazo de entrega da versão 1.0 é de seis meses.
+- A stack tecnológica será definida em documento específico.
 
 ## 7. Escopo
 
@@ -164,5 +165,6 @@ A solução deverá utilizar mecanismos formais para declaração, versionamento
 
 ### Fora de Escopo (MVP)
 
+- No MVP, a estratégia de tenancy será configurada, porém operando com um único tenant ativo.
 - RNF-04, RNF-05, RNF-06. Entretanto, embora estejam fora do escopo funcional do MVP, sua arquitetura será preparada desde o início para suportá-los, com implementação gradual.
 - No MVP, será utilizado um único schema, sem isolamento por tenant, mantendo o tenant_id apenas como preparação para evolução.

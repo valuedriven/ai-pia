@@ -1,164 +1,203 @@
----
-description: Next.js App Router - Production Patterns (v16.1.1)
----
-
 # Next.js App Router - Production Patterns
-
 **Version**: Next.js 16.1.1
 **React Version**: 19.2.3
 **Node.js**: 20.9+
-**Last Verified**: 2026-01-09
 
-## 1. Async Request APIs (Breaking Change)
-In Next.js 16, dynamic APIs that access request-time information are asynchronous.
+## Core Concepts & Updates
 
-### `params` & `searchParams`
-**❌ Next.js 15 (Synchronous)**
-```tsx
+### Caching and Data Fetching
+Next.js 16 introduces `"use cache"` for granular caching control.
+
+```typescript
+"use cache"
+```
+
+**Revalidating Tags:**
+```typescript
+revalidateTag('tag-name')
+```
+
+### Async Params and SearchParams
+In Next.js 16, `params` and `searchParams` are Promises and must be awaited.
+
+**❌ This no longer works in Next.js 16:**
+```typescript
 export default function Page({ params, searchParams }: { params: { slug: string }, searchParams: { query: string } }) {
-  const slug = params.slug; // ❌ Error: params is a Promise
-  const query = searchParams.query; // ❌ Error: searchParams is a Promise
+  const slug = params.slug // ❌ Error: params is a Promise
+  const query = searchParams.query // ❌ Error: searchParams is a Promise
+  return <div>{slug}</div>
 }
 ```
 
-**✅ Next.js 16 (Asynchronous)**
-```tsx
+**✅ Correct: await params and searchParams:**
+```typescript
 export default async function Page({ params, searchParams }: { params: Promise<{ slug: string }>, searchParams: Promise<{ query: string }> }) {
-  const { slug } = await params;
-  const { query } = await searchParams;
+  const { slug } = await params // ✅ Await the promise
+  const { query } = await searchParams // ✅ Await the promise
+  return <div>{slug}</div>
 }
 ```
 
-### `cookies()` & `headers()`
-**❌ Next.js 15**
-```tsx
+### Headers and Cookies
+`cookies()` and `headers()` are now async.
+
+**❌ Before:**
+```typescript
 import { cookies, headers } from 'next/headers'
-const cookieStore = cookies() // ❌ Sync access
-const headersList = headers() // ❌ Sync access
+export function MyComponent() {
+  const cookieStore = cookies() // ❌ Sync access
+  const headersList = headers() // ❌ Sync access
+}
 ```
 
-**✅ Next.js 16**
-```tsx
+**✅ After:**
+```typescript
 import { cookies, headers } from 'next/headers'
-const cookieStore = await cookies() // ✅ Async access
-const headersList = await headers() // ✅ Async access
-```
-
-## 2. Server Actions & Caching
-New explicit caching APIs replace implicit behavior.
-
-### `use cache` Directive
-Use `'use cache'` to opt-in to caching for specific functions or files.
-
-```tsx
-'use cache'
-export async function getPosts() {
-  const response = await fetch('/api/posts')
-  return response.json()
+export async function MyComponent() {
+  const cookieStore = await cookies() // ✅ Async access
+  const headersList = await headers() // ✅ Async access
 }
 ```
 
-### `revalidateTag`
-Requires a second argument in Next.js 16 to specify cache life or 'max'.
+### Client Components
+For client components, use `React.use()` to unwrap promises from props.
 
-**❌ Next.js 15**
-```ts
-revalidateTag('posts')
-```
-
-**✅ Next.js 16**
-```ts
-revalidateTag('posts', 'max')
-// OR
-revalidateTag('posts', {
-  stale: 3600,
-  revalidate: 86400,
-})
-```
-
-## 3. Middleware Replacement: `proxy.ts`
-`middleware.ts` is deprecated in favor of `proxy.ts` for improved performance and clarity.
-
-**✅ `app/proxy.ts`**
-```ts
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-
-export function proxy(request: NextRequest) {
-  const token = request.cookies.get('token')
-  if (!token) {
-    return NextResponse.redirect(new URL('/login', request.url))
-  }
-  return NextResponse.next()
-}
-
-export const config = {
-  matcher: '/dashboard/:path*',
-}
-```
-
-## 4. Parallel Routes: `default.tsx`
-`default.tsx` is now **REQUIRED** for every parallel route slot to prevent 404s during soft navigation.
-
-```
-app/
-├── @modal/
-│   ├── login/
-│   │   └── page.tsx
-│   └── default.tsx     ← REQUIRED
-└── layout.tsx
-```
-
-**`app/@modal/default.tsx`**
-```tsx
-export default function Default() {
-  return null;
-}
-```
-
-## 5. React 19 Integration
-
-### `use` Hook
-Unwrap promises in Client Components.
-
-```tsx
+```typescript
 'use client';
 import { use } from 'react';
 
 export default function ClientComponent({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+  const { id } = use(params); // Unwrap Promise in client
   return <div>{id}</div>;
 }
 ```
 
-### React Compiler
-Enabled via `next.config.ts`. Automatically memoizes components.
+### Middleware vs Proxy
+Next.js 16 introduces `proxy.ts` as a replacement/alternative for some middleware use cases, though middleware is still supported (with deprecation warnings for some patterns).
 
-```ts
-const config: NextConfig = {
-  experimental: {
-    reactCompiler: true,
-  },
+**Middleware (Deprecated pattern):**
+```typescript
+// middleware.ts ❌ Deprecated in Next.js 16
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+
+export function middleware(request: NextRequest) {
+  const response = NextResponse.next()
+  response.headers.set('x-custom-header', 'value')
+  return response
+}
+export const config = {
+  matcher: '/api/:path*',
 }
 ```
 
-## 6. Image Optimization
-Image configuration has changed defaults.
+**Proxy (New):**
+```typescript
+// proxy.ts ✅ New in Next.js 16
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-```ts
-// next.config.ts
+export function proxy(request: NextRequest) {
+  const response = NextResponse.next()
+  response.headers.set('x-custom-header', 'value')
+  return response
+}
+export const config = {
+  matcher: '/api/:path*',
+}
+```
+
+### Parallel Routes
+`default.tsx` is now **REQUIRED** in Next.js 16 for parallel routes.
+
+Structure:
+```
+app/
+├── @auth/
+│   ├── login/
+│   │   └── page.tsx
+│   └── default.tsx ← REQUIRED in Next.js 16
+├── @dashboard/
+│   ├── overview/
+│   │   └── page.tsx
+│   └── default.tsx ← REQUIRED in Next.js 16
+└── layout.tsx
+```
+
+`app/layout.tsx`:
+```typescript
+export default function Layout({
+  children,
+  auth,
+  dashboard,
+}: {
+  children: React.ReactNode
+  auth: React.ReactNode
+  dashboard: React.ReactNode
+}) {
+  return (
+    <html>
+      <body>
+        {auth}
+        {dashboard}
+        {children}
+      </body>
+    </html>
+  )
+}
+```
+
+`app/@auth/default.tsx`:
+```typescript
+export default function AuthDefault() {
+  return null // or <Skeleton /> or redirect
+}
+```
+
+### Image Optimization
+Default device sizes and ttl have changed or should be configured.
+
+`next.config.ts`:
+```typescript
+import type { NextConfig } from 'next'
+
 const config: NextConfig = {
   images: {
-    minimumCacheTTL: 60,
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    formats: ['image/webp'],
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'example.com',
-      },
-    ],
+    minimumCacheTTL: 60, // Revert to 60 seconds
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920], // Add larger sizes
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384], // Restore old sizes
+    formats: ['image/webp'], // Default
   },
 }
+export default config
 ```
+
+### "use cache" Directive
+Use `"use cache"` to cache the output of a function (component or data fetch).
+
+**Example: Expensive Component**
+```typescript
+// app/components/expensive-component.tsx
+'use cache'
+export async function ExpensiveComponent() {
+  const data = await fetch('https://api.example.com/data')
+  const json = await data.json()
+  return (
+    <div>
+      <h1>{json.title}</h1>
+      <p>{json.description}</p>
+    </div>
+  )
+}
+```
+
+**Example: Data Function**
+```typescript
+// lib/data.ts
+'use cache'
+export async function getExpensiveData(id: string) {
+  const response = await fetch(`https://api.example.com/items/${id}`)
+  return response.json()
+}
+```
+

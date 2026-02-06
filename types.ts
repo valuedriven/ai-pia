@@ -1,52 +1,50 @@
-export type Role = 'admin' | 'client' | 'guest';
+export enum UserRole {
+  ADMIN = 'ADMIN',
+  CUSTOMER = 'CUSTOMER',
+  GUEST = 'GUEST'
+}
+
+export enum OrderStatus {
+  PENDING = 'Pendente',
+  PAID = 'Pago',
+  SHIPPED = 'Enviado',
+  DELIVERED = 'Entregue',
+  CANCELLED = 'Cancelado'
+}
 
 export interface Product {
   id: string;
   name: string;
-  image: string;
-  description: string;
+  category: string;
   price: number;
   stock: number;
-  category: string;
-  active: boolean;
+  image: string;
+  ref: string;
+  status: 'Ativo' | 'Inativo';
 }
 
-export interface Client {
+export interface Customer {
   id: string;
   name: string;
   email: string;
   phone: string;
   address: string;
-  hasOrders: boolean; // For deletion logic
+  since: string;
+  initials: string;
+  color: string;
 }
 
-export type OrderStatus = 'Novo' | 'Pago' | 'Preparação' | 'Faturado' | 'Despachado' | 'Entregue' | 'Cancelado';
-export type PaymentStatus = 'Pendente' | 'Pago' | 'Reembolsado';
-
 export interface OrderItem {
-  productId: string;
-  productName: string;
+  product: Product;
   quantity: number;
-  price: number;
 }
 
 export interface Order {
   id: string;
-  customerId: string;
-  customerName: string;
+  customer: Customer;
   date: string;
   total: number;
   status: OrderStatus;
-  paymentStatus: PaymentStatus;
   items: OrderItem[];
-}
-
-export interface CartItem extends OrderItem {
-  image: string;
-}
-
-export interface KPI {
-  label: string;
-  value: string;
-  type: 'currency' | 'number';
+  paymentMethod: string;
 }

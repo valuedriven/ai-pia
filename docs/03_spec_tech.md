@@ -1,4 +1,4 @@
-# Definições técnicas
+# Especificação Técnica
 
 ## 1. Visão Geral Técnica
 
@@ -11,7 +11,7 @@ Este documento descreve como os requisitos não funcionais do produto e-micro-co
 - Estilo arquitetural: aplicação web com backend desacoplado via APIs RESTful.
 - Componentes principais: Frontend Web, Backend de Aplicação e Banco de Dados.
 - Serviço de observabilidade: aderente ao padrão OpenTelemetry (backend e frontend).
-- Segurança: aderente aos padrões OpenID Connect e OAuth 2.0.
+- Serviço de segurança: aderente aos padrões OpenID Connect e OAuth 2.0.
 - Comunicação: HTTP/HTTPS com payloads JSON.
 - Infraestrutura: utilização de contêineres no padrão OCI.
 
@@ -21,7 +21,7 @@ Este documento descreve como os requisitos não funcionais do produto e-micro-co
 
 ### 3.1 - Versão inicial
 
-- **Frontend:** Next.js 16+ (App Router) + Tailwind CSS.
+- **Frontend:** Next.js 16+ (App Router).
 - **Backend:** NestJS; API RESTful.
 - **Persistência:** PostgreSQL 15+ via Supabase.
 - **ORM:** Prisma 5+.
