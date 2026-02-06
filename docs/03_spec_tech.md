@@ -26,7 +26,7 @@ Este documento descreve como os requisitos não funcionais do produto e-micro-co
 - **Persistência:** PostgreSQL 15+ via Supabase.
 - **ORM:** Prisma 5+.
 - **Segurança (autenticação e Autorização):** Clerk.
-- **Observabilidade:** Datadog (backend e frontend).
+- **Observabilidade:** Grafana Cloud (backend e frontend).
 - **Infraestrutura:** Vercel (backend e frontend).
 
 ### 3.2 - Versão futura (Ajustes)

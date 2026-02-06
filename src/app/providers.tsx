@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { CartProvider } from "@/context/CartContext";
+import { initMonitoring } from "@/lib/faro";
 
 type Theme = "light" | "dark" | "system";
 
@@ -22,6 +23,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         setMounted(true);
         const stored = localStorage.getItem("theme") as Theme;
         if (stored) setTheme(stored);
+
+        // Initialize Grafana Faro RUM
+        initMonitoring();
     }, []);
 
     useEffect(() => {
