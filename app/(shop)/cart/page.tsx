@@ -1,41 +1,38 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Trash2, Lock, Tag } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
+import { ArrowLeft, Trash2, Lock, Tag, Loader2 } from "lucide-react";
+import { useCart } from "@/context/CartContext";
 
 export default function CartPage() {
-    // Mock cart items
-    const cartItems = [
-        {
-            id: 1,
-            name: "Relógio Minimalista",
-            variant: "Branco",
-            price: 250.0,
-            quantity: 1,
-            image: "https://picsum.photos/200/200?random=10",
-        },
-        {
-            id: 2,
-            name: "Headphones Pro",
-            variant: "Azul",
-            price: 150.0,
-            quantity: 2,
-            image: "https://picsum.photos/200/200?random=11",
-        },
-        {
-            id: 3,
-            name: "Tênis Sport Runner",
-            variant: "Tamanho: 42",
-            price: 180.0,
-            quantity: 1,
-            image: "https://picsum.photos/200/200?random=12",
-        },
-    ];
+    const router = useRouter();
+    const { isSignedIn } = useAuth();
+    const { cartItems, removeFromCart, updateQuantity, totalAmount, clearCart } = useCart();
+    const [isConfirming, setIsConfirming] = useState(false);
 
-    const subtotal = 730.0;
-    const shipping = 25.0;
-    const total = 755.0;
+    const subtotal = totalAmount;
+    const shipping = cartItems.length > 0 ? 25.0 : 0;
+    const total = subtotal + shipping;
+
+    const handleConfirmOrder = async () => {
+        if (cartItems.length === 0) return;
+
+        if (!isSignedIn) {
+            router.push("/login?redirect_url=/cart");
+            return;
+        }
+
+        setIsConfirming(true);
+        // Simulate API call
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+
+        clearCart();
+        setIsConfirming(false);
+        router.push("/my-orders");
+    };
 
     return (
         <div className="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
@@ -98,13 +95,19 @@ export default function CartPage() {
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex items-center h-8 w-24 rounded-lg border border-input bg-surface">
-                                                <button className="w-8 h-full flex items-center justify-center text-muted-foreground hover:bg-muted rounded-l-lg transition-colors">
+                                                <button
+                                                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                                    className="w-8 h-full flex items-center justify-center text-muted-foreground hover:bg-muted rounded-l-lg transition-colors"
+                                                >
                                                     -
                                                 </button>
                                                 <span className="flex-1 text-center text-sm font-medium text-foreground">
                                                     {item.quantity}
                                                 </span>
-                                                <button className="w-8 h-full flex items-center justify-center text-muted-foreground hover:bg-muted rounded-r-lg transition-colors">
+                                                <button
+                                                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                    className="w-8 h-full flex items-center justify-center text-muted-foreground hover:bg-muted rounded-r-lg transition-colors"
+                                                >
                                                     +
                                                 </button>
                                             </div>
@@ -113,7 +116,10 @@ export default function CartPage() {
                                             R$ {(item.price * item.quantity).toFixed(2)}
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <button className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 p-1.5 rounded-md transition-colors">
+                                            <button
+                                                onClick={() => removeFromCart(item.id)}
+                                                className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 p-1.5 rounded-md transition-colors"
+                                            >
                                                 <Trash2 className="h-[18px] w-[18px]" />
                                             </button>
                                         </td>
@@ -170,8 +176,19 @@ export default function CartPage() {
                             </div>
                         </div>
 
-                        <button className="w-full mt-6 bg-primary hover:bg-primary-hover text-white font-bold py-3 rounded-lg shadow-sm transition-colors">
-                            Confirmar Pedido
+                        <button
+                            onClick={handleConfirmOrder}
+                            disabled={cartItems.length === 0 || isConfirming}
+                            className="w-full mt-6 bg-primary hover:bg-primary-hover text-white font-bold py-3 rounded-lg shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                            {isConfirming ? (
+                                <>
+                                    <Loader2 className="h-5 w-5 animate-spin" />
+                                    Processando...
+                                </>
+                            ) : (
+                                "Confirmar Pedido"
+                            )}
                         </button>
 
                         <div className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">

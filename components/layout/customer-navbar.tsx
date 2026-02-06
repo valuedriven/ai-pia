@@ -6,9 +6,11 @@ import { usePathname } from "next/navigation";
 import Logo from "@/components/ui/Logo";
 import { Search, ShoppingCart, LogIn } from "lucide-react";
 import { SignedIn, SignedOut, UserButton, SignInButton } from "@clerk/nextjs";
+import { useCart } from "@/context/CartContext";
 
 const CustomerNavbar: React.FC = () => {
     const pathname = usePathname();
+    const { itemCount } = useCart();
 
     const getNavLinkClass = (path: string) => {
         const isActive = pathname.startsWith(path);
@@ -60,7 +62,11 @@ const CustomerNavbar: React.FC = () => {
                             className="relative p-2 text-muted-foreground hover:text-primary transition-colors"
                         >
                             <ShoppingCart className="h-6 w-6" />
-                            <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-destructive"></span>
+                            {itemCount > 0 && (
+                                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-white text-[10px] font-bold flex items-center justify-center border-2 border-surface">
+                                    {itemCount}
+                                </span>
+                            )}
                         </Link>
 
                         <div className="h-6 w-px bg-border mx-2"></div>

@@ -3,8 +3,21 @@
 import React from "react";
 import { MOCK_PRODUCTS } from "@/constants";
 import { ChevronDown, Heart, ShoppingCart } from "lucide-react";
+import { useCart } from "@/context/CartContext";
 
 export default function ShopHome() {
+    const { addToCart } = useCart();
+
+    const handleAddToCart = (product: any) => {
+        addToCart({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.image,
+            quantity: 1
+        });
+    };
+
     return (
         <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
@@ -55,7 +68,10 @@ export default function ShopHome() {
                                 <span className="text-lg font-bold text-foreground">
                                     R$ {product.price.toFixed(2)}
                                 </span>
-                                <button className="h-8 w-8 flex items-center justify-center rounded-full bg-primary text-white hover:bg-primary-hover transition-colors shadow-sm">
+                                <button
+                                    onClick={() => handleAddToCart(product)}
+                                    className="h-8 w-8 flex items-center justify-center rounded-full bg-primary text-white hover:bg-primary-hover transition-colors shadow-sm"
+                                >
                                     <ShoppingCart className="h-4 w-4" />
                                 </button>
                             </div>

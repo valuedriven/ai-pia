@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { CartProvider } from "@/context/CartContext";
 
 type Theme = "light" | "dark" | "system";
 
@@ -49,12 +50,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }, [theme, mounted]);
 
     if (!mounted) {
-        return <>{children}</>;
+        return <CartProvider>{children}</CartProvider>;
     }
 
     return (
         <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme }}>
-            {children}
+            <CartProvider>
+                {children}
+            </CartProvider>
         </ThemeContext.Provider>
     );
 }
