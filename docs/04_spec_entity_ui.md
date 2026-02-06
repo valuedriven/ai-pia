@@ -75,30 +75,42 @@ Disponível no arquivo prisma.schema.
 - Botões: Alterar Status (Admin).
 - Links: —
 
-### INT-06 Gestão de Produtos
+### INT-06 Listagem de Produtos
 
-- Lista com imagem (miniatura), nome, preço, estoque e ações.
-- Formulário único para criação e edição.
+- Listagem e respectivos comandos.
+- Campos: Nome do Produto, Imagem (miniatura), Descrição, Preço, Estoque, Categoria, Ativo (s/n).
+- Botões: Cadastrar, Pesquisar, Editar, Excluir.
+- Links: —
+
+### INT-07 Edição de Produtos
+
+- Formulário para criação e edição
 - Campos: Nome do Produto, Imagem, Descrição, Preço, Estoque, Categoria, Ativo (s/n).
-- Botões: Cadastrar, Salvar, Editar, Excluir.
+- Botões: Salvar, Cancelar.
 - Links: —
 
-### INT-07 Gestão de Clientes
+### INT-08 Listagem de Clientes
 
-- Lista com dados de cada cliente.
-- Formulário único para criação e edição.
+- Listagem e respectivos comandos.
 - Campos: Nome do cliente, Endereço, e-mail, Telefone.
-- Botões: Cadastrar, Salvar, Editar, Excluir.
+- Botões: Cadastrar, Pesquisar, Editar, Excluir.
 - Links: —
 
-### INT-08 Gestão de Pedidos
+### INT-09 Edição de Clientes
+
+- Formulário com dados de cada cliente.
+- Campos: Nome do cliente, Endereço, e-mail, Telefone.
+- Botões: Salvar, Cancelar.
+- Links: —
+
+### INT-10 Gestão de Pedidos
 
 - Lista com dados de cada pedido: ID, Data, Total, Status (com badge visual)
 - Campos: —
 - Botões: —
 - Links: Acessar Detalhe do Pedido
 
-### INT-09 Dashboard
+### INT-11 Dashboard
 
 - Grid com cards de métricas (KPIs): Total de Vendas, Valor Recebido (R$), Valor Pendente (R$).
 - Exclusivo do administrador.

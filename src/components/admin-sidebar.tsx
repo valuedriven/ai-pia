@@ -20,9 +20,9 @@ const AdminSidebar: React.FC = () => {
     };
 
     return (
-        <aside className="hidden w-64 flex-col border-r border-border bg-surface md:flex h-full">
+        <aside className="w-full h-full flex flex-col border-r border-border bg-surface">
             <div className="flex h-16 items-center px-6 border-b border-border">
-                <Link href="/admin/dashboard" className="hover:opacity-90 transition-opacity">
+                <Link href="/" className="hover:opacity-90 transition-opacity">
                     <Logo className="h-8" />
                 </Link>
             </div>

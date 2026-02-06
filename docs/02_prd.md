@@ -2,7 +2,7 @@
 
 ## 1. Visão Geral do Produto (Sumário Executivo)
 
-O produto é uma plataforma digital destinada a microempreendedores que desejam organizar e controlar a venda de produtos por meio de um fluxo simples e estruturado de pedidos e pagamentos.
+O SeWAI é uma plataforma digital destinada a microempreendedores que desejam organizar e controlar a venda de produtos por meio de um fluxo simples e estruturado de pedidos e pagamentos.
 
 A solução permite que o microempreendedor cadastre produtos, disponibilize-os em uma vitrine digital para seus clientes e acompanhe todo o ciclo de venda — da criação do pedido ao recebimento do pagamento. O sistema oferece dois fluxos de navegação distintos: um administrativo, voltado à gestão do negócio, e outro voltado ao cliente final, focado na navegação e realização de pedidos.
 

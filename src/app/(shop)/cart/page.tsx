@@ -3,13 +3,16 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
 import { ArrowLeft, Trash2, Lock, Tag, Loader2 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import { ensureCustomerExists } from "@/lib/customer-sync";
+import { supabase } from "@/lib/supabase";
 
 export default function CartPage() {
     const router = useRouter();
     const { isSignedIn } = useAuth();
+    const { user } = useUser();
     const { cartItems, removeFromCart, updateQuantity, totalAmount, clearCart } = useCart();
     const [isConfirming, setIsConfirming] = useState(false);
 
@@ -20,18 +23,36 @@ export default function CartPage() {
     const handleConfirmOrder = async () => {
         if (cartItems.length === 0) return;
 
-        if (!isSignedIn) {
+        if (!isSignedIn || !user) {
             router.push("/login?redirect_url=/cart");
             return;
         }
 
         setIsConfirming(true);
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        try {
+            // 1. Ensure customer exists in Supabase
+            const customerId = await ensureCustomerExists(user);
 
-        clearCart();
-        setIsConfirming(false);
-        router.push("/my-orders");
+            if (!customerId) {
+                throw new Error("Não foi possível validar seu cadastro de cliente.");
+            }
+
+            console.log("Customer validated/created with ID:", customerId);
+
+            // 2. Here we would normally create the order in Supabase
+            // For now, we simulate the logic as requested to allow "efetivar a compra"
+            // through a valid customer record.
+
+            await new Promise((resolve) => setTimeout(resolve, 1500));
+
+            clearCart();
+            setIsConfirming(false);
+            router.push("/my-orders");
+        } catch (error: any) {
+            console.error("Erro ao processar pedido:", error.message);
+            alert("Erro ao processar seu pedido. Por favor, tente novamente.");
+            setIsConfirming(false);
+        }
     };
 
     return (

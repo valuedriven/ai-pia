@@ -5,12 +5,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Logo from "@/components/ui/Logo";
 import { Search, ShoppingCart, LogIn } from "lucide-react";
-import { SignedIn, SignedOut, UserButton, SignInButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, UserButton, SignInButton, useUser } from "@clerk/nextjs";
 import { useCart } from "@/context/CartContext";
 
 const CustomerNavbar: React.FC = () => {
     const pathname = usePathname();
     const { itemCount } = useCart();
+    const { user } = useUser();
 
     const getNavLinkClass = (path: string) => {
         const isActive = pathname.startsWith(path);
@@ -21,7 +22,7 @@ const CustomerNavbar: React.FC = () => {
     };
 
     return (
-        <header className="sticky top-0 z-50 w-full bg-surface border-b border-border">
+        <header className="fixed top-0 left-0 right-0 z-[60] w-full bg-surface border-b border-border shadow-sm">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between h-16">
                     <div className="flex items-center gap-8">
@@ -42,6 +43,14 @@ const CustomerNavbar: React.FC = () => {
                             >
                                 Meus Pedidos
                             </Link>
+                            {user?.publicMetadata?.role === "admin" && (
+                                <Link
+                                    href="/admin/dashboard"
+                                    className={getNavLinkClass("/admin")}
+                                >
+                                    Painel Admin
+                                </Link>
+                            )}
                         </nav>
                     </div>
 

@@ -28,10 +28,11 @@ export interface Customer {
   name: string;
   email: string;
   phone: string;
-  address: string;
   since: string;
+  address: string;
   initials: string;
   color: string;
+  created_at?: string;
 }
 
 export interface OrderItem {
