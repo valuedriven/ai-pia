@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Logo from "@/components/ui/Logo";
 import { Search, ShoppingCart, LogIn } from "lucide-react";
+import { SignedIn, SignedOut, UserButton, SignInButton } from "@clerk/nextjs";
 
 const CustomerNavbar: React.FC = () => {
     const pathname = usePathname();
@@ -64,13 +65,17 @@ const CustomerNavbar: React.FC = () => {
 
                         <div className="h-6 w-px bg-border mx-2"></div>
 
-                        <Link
-                            href="/login"
-                            className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors"
-                        >
-                            <LogIn className="h-5 w-5" />
-                            <span>Entrar</span>
-                        </Link>
+                        <SignedOut>
+                            <SignInButton mode="modal">
+                                <button className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors">
+                                    <LogIn className="h-5 w-5" />
+                                    <span>Entrar</span>
+                                </button>
+                            </SignInButton>
+                        </SignedOut>
+                        <SignedIn>
+                            <UserButton afterSignOutUrl="/" />
+                        </SignedIn>
                     </div>
                 </div>
             </div>

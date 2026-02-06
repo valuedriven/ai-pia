@@ -5,9 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Logo from "@/components/ui/Logo";
 import { LayoutDashboard, Package, ShoppingBag, Users, LogOut } from "lucide-react";
+import { SignOutButton, SignedIn, useUser } from "@clerk/nextjs";
 
 const AdminSidebar: React.FC = () => {
     const pathname = usePathname();
+    const { user } = useUser();
 
     const getLinkClass = (path: string) => {
         const isActive = pathname.startsWith(path);
@@ -45,29 +47,32 @@ const AdminSidebar: React.FC = () => {
 
                 <div className="my-4 border-t border-border"></div>
 
-                <Link
-                    href="/login"
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
-                >
-                    <LogOut className="h-5 w-5" />
-                    <span className="text-sm font-medium">Sair</span>
-                </Link>
+                <SignOutButton>
+                    <button
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                    >
+                        <LogOut className="h-5 w-5" />
+                        <span className="text-sm font-medium">Sair</span>
+                    </button>
+                </SignOutButton>
             </nav>
 
             <div className="border-t border-border p-4">
-                <div className="flex items-center gap-3">
-                    <img
-                        src="https://picsum.photos/id/64/100/100"
-                        alt="Admin"
-                        className="h-9 w-9 rounded-full object-cover border border-border"
-                    />
-                    <div className="flex flex-col">
-                        <span className="text-sm font-medium text-foreground">
-                            Ricardo Silva
-                        </span>
-                        <span className="text-xs text-muted-foreground">Loja Principal</span>
+                <SignedIn>
+                    <div className="flex items-center gap-3">
+                        <img
+                            src={user?.imageUrl || "https://picsum.photos/id/64/100/100"}
+                            alt="Admin"
+                            className="h-9 w-9 rounded-full object-cover border border-border"
+                        />
+                        <div className="flex flex-col">
+                            <span className="text-sm font-medium text-foreground">
+                                {user?.fullName || "Admin"}
+                            </span>
+                            <span className="text-xs text-muted-foreground">Loja Principal</span>
+                        </div>
                     </div>
-                </div>
+                </SignedIn>
             </div>
         </aside>
     );
