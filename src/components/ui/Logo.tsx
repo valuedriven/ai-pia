@@ -1,4 +1,5 @@
 import React from "react";
+import { cn } from "@/lib/utils";
 
 interface LogoProps {
   className?: string;
@@ -7,17 +8,17 @@ interface LogoProps {
 }
 
 export const Logo: React.FC<LogoProps> = ({
-  className = "h-8",
+  className,
   variant = "color",
   showText = true,
 }) => {
   const textColor =
     variant === "white"
       ? "text-white"
-      : "text-[#1e3a8a] dark:text-blue-400"; // Added dark mode support
+      : "text-primary dark:text-primary-hover";
 
   return (
-    <div className={`flex items-center gap-2.5 ${className}`}>
+    <div className={cn("flex items-center gap-2.5", className)}>
       <svg
         viewBox="0 0 40 40"
         fill="none"
@@ -46,8 +47,8 @@ export const Logo: React.FC<LogoProps> = ({
             y2="33"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stopColor="#3B82F6" />
-            <stop offset="1" stopColor="#1E3A8A" />
+            <stop stopColor="var(--color-blue-500)" />
+            <stop offset="1" stopColor="var(--color-blue-900)" />
           </linearGradient>
           <linearGradient
             id="paint1_linear"
@@ -57,14 +58,14 @@ export const Logo: React.FC<LogoProps> = ({
             y2="9"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stopColor="#F59E0B" />
-            <stop offset="1" stopColor="#D97706" />
+            <stop stopColor="var(--color-yellow-500)" />
+            <stop offset="1" stopColor="var(--color-yellow-800)" />
           </linearGradient>
         </defs>
       </svg>
 
       {showText && (
-        <span className={`font-bold tracking-tight text-2xl ${textColor}`}>
+        <span className={cn("font-bold tracking-tight text-2xl", textColor)}>
           Tractus
         </span>
       )}

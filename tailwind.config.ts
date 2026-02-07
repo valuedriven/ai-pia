@@ -40,6 +40,10 @@ export default {
                     DEFAULT: "var(--destructive)",
                     foreground: "var(--destructive-foreground)",
                 },
+                surface: {
+                    DEFAULT: "var(--card)",
+                    foreground: "var(--card-foreground)",
+                },
                 border: "var(--border)",
                 input: "var(--input)",
                 ring: "var(--ring)",
@@ -59,6 +63,7 @@ export default {
                 lg: "var(--radius)",
                 md: "calc(var(--radius) - 2px)",
                 sm: "calc(var(--radius) - 4px)",
+                pill: "9999px",
             },
         },
     },

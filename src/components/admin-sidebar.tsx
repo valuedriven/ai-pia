@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import Logo from "@/components/ui/Logo";
 import { LayoutDashboard, Package, ShoppingBag, Users, LogOut } from "lucide-react";
 import { SignOutButton, SignedIn, useUser } from "@clerk/nextjs";
+import { cn } from "@/lib/utils";
 
 const AdminSidebar: React.FC = () => {
     const pathname = usePathname();
@@ -13,10 +14,12 @@ const AdminSidebar: React.FC = () => {
 
     const getLinkClass = (path: string) => {
         const isActive = pathname.startsWith(path);
-        return `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group ${isActive
-            ? "bg-primary text-primary-foreground"
-            : "text-muted-foreground hover:bg-muted hover:text-foreground"
-            }`;
+        return cn(
+            "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group",
+            isActive
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+        );
     };
 
     return (
@@ -49,7 +52,10 @@ const AdminSidebar: React.FC = () => {
 
                 <SignOutButton>
                     <button
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                        className={cn(
+                            "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground transition-colors",
+                            "hover:bg-destructive/10 hover:text-destructive"
+                        )}
                     >
                         <LogOut className="h-5 w-5" />
                         <span className="text-sm font-medium">Sair</span>

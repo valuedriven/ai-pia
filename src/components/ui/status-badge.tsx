@@ -1,41 +1,54 @@
 import React from "react";
 import { OrderStatus } from "@/types";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/utils";
 
-interface StatusBadgeProps {
+const badgeVariants = cva(
+    "px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full border transition-colors",
+    {
+        variants: {
+            variant: {
+                pending: "bg-feedback-warning text-feedback-warning-text border-feedback-warning",
+                success: "bg-feedback-success text-feedback-success-text border-feedback-success",
+                info: "bg-feedback-info text-feedback-info-text border-feedback-info",
+                error: "bg-feedback-error text-feedback-error-text border-feedback-error",
+                muted: "bg-muted text-muted-foreground border-border",
+            },
+        },
+        defaultVariants: {
+            variant: "muted",
+        },
+    }
+);
+
+interface StatusBadgeProps extends VariantProps<typeof badgeVariants> {
     status: OrderStatus | string;
+    className?: string;
 }
 
-const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
-    let colorClass = "bg-muted text-muted-foreground";
+const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className }) => {
+    let variant: VariantProps<typeof badgeVariants>["variant"] = "muted";
 
     switch (status) {
         case OrderStatus.PENDING:
-            colorClass = "bg-feedback-warning text-feedback-warning-text border-feedback-warning";
+            variant = "pending";
             break;
         case OrderStatus.PAID:
-            colorClass = "bg-feedback-success text-feedback-success-text border-feedback-success";
+        case OrderStatus.DELIVERED:
+        case "Ativo":
+            variant = "success";
             break;
         case OrderStatus.SHIPPED:
-            colorClass = "bg-feedback-info text-feedback-info-text border-feedback-info";
-            break;
-        case OrderStatus.DELIVERED:
-            colorClass = "bg-feedback-success text-feedback-success-text border-feedback-success"; // Teal mapped to success or I could make 'feedback-teal'
+            variant = "info";
             break;
         case OrderStatus.CANCELLED:
-            colorClass = "bg-feedback-error text-feedback-error-text border-feedback-error";
-            break;
-        case "Ativo":
-            colorClass = "bg-feedback-success text-feedback-success-text";
-            break;
         case "Inativo":
-            colorClass = "bg-feedback-error text-feedback-error-text";
+            variant = "error";
             break;
     }
 
     return (
-        <span
-            className={`px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full border ${colorClass}`}
-        >
+        <span className={cn(badgeVariants({ variant }), className)}>
             {status}
         </span>
     );
