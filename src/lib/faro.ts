@@ -7,9 +7,6 @@ export function initMonitoring() {
     const faroUrl = process.env.NEXT_PUBLIC_FARO_URL;
 
     if (!faroUrl) {
-        if (process.env.NODE_ENV === "development") {
-            console.warn("Faro RUM: NEXT_PUBLIC_FARO_URL is not defined. Monitoring disabled.");
-        }
         return;
     }
 
